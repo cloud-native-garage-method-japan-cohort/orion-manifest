@@ -2,7 +2,7 @@ FROM node:16.5.0 as build-stage
 WORKDIR /app
 COPY package*.json /app/
 RUN npm install
-COPY ./ /app/
+COPY ./orion/ /app/
 ARG configuration=production
 RUN npm run build -- --output-path=./dist/out --configuration $configuration
 
