@@ -1,0 +1,102 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: back-deploy-pipeline
+spec:
+  workspaces:
+  - name: pipeline-shared-data
+  params:
+  - name: source-url
+    type: string
+    description: Repository URL of the source code
+  - name: source-branch
+    type: string
+    description: Revision to checkout of the source code. (branch, tag, sha, ref, etc...)
+    default: "master"
+  - name: manifest-url
+    type: string
+    description: Repository URL of the manifest
+  - name: manifest-branch
+    type: string
+    description: Revision to checkout of the manifest. (branch, tag, sha, ref, etc...)
+    default: "master"
+  - name: image-repo
+    type: string
+    description: Docker image name
+  - name: app-name
+    type: string
+    description: App name
+  - name: app-namespace
+    type: string
+    description: Namespace to use
+  - name: manifest-dir
+    type: string
+    description: The directory where the manifest is stored
+  - name: source-dir
+    type: string
+    description: The directory where the source code is stored
+  tasks:
+  - name: source-clone
+    params:
+    - name: url
+      value: "$(params.source-url)"
+    - name: revision
+      value: "$(params.source-branch)"
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: pipeline-shared-data
+#  - name: code-check
+#    runAfter:
+#    - source-clone
+#    - manifest-clone
+#  - name: unit-test
+#    runAfter:
+#    - source-clone
+#    - manifest-clone
+  - name: build-image
+    runAfter:
+    - source-clone
+    params:
+    - name: IMAGE
+      value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
+    - name: DOCKERFILE
+      value: "./$(params.source-dir)/Dockerfile"
+    - name: CONTEXT
+      value: "./$(params.source-dir)"
+    taskRef:
+      name: buildah
+    workspaces:
+    - name: source
+      workspace: pipeline-shared-data
+  - name: manifest-clone
+    runAfter:
+    - build-image
+    params:
+    - name: url
+      value: "$(params.manifest-url)"
+    - name: revision
+      value: "$(params.manifest-branch)"
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: pipeline-shared-data
+  - name: deploy-for-k8s
+    runAfter:
+    - manifest-clone
+    params:
+    - name: manifest-dir
+      value: "$(params.manifest-dir)"
+    - name: app-name
+      value: "$(params.app-name)"
+    - name: app-namespace
+      value: "$(params.app-namespace)"
+    - name: image-url
+      value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
+    taskRef:
+      name: deploy-for-k8s-task
+    workspaces:
+    - name: source
+      workspace: pipeline-shared-data
