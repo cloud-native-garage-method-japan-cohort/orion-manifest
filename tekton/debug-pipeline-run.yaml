@@ -1,32 +1,32 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: front-deploy-pr-
+  generateName: back-deploy-pr-
 spec:
   serviceAccountName: build-bot
   pipelineRef:
-    name: front-deploy-pipeline
+    name: back-deploy-pipeline
   params:
   - name: source-url
-    value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-frontend.git"
+    value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-backend.git"
   - name: source-branch
-    value: "feature/add-Dockerfile"
+    value: "master"
   - name: manifest-url
     value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-manifest.git"
   - name: manifest-branch
-    value: "feature/add-front-manifest"
+    value: "feature/add-back-manifest"
 #  - name: commit-message
 #    value: "$(tt.params.commit-message)"
   - name: image-repo
-    value: "quay.io/tyonesaka/front-app"
+    value: "quay.io/tyonesaka/back-api"
   - name: app-name
-    value: "front-app"
+    value: "back-api"
   - name: app-namespace
     value: "team-orion"
   - name: manifest-dir
-    value: "front"
+    value: "back"
   - name: source-dir
-    value: "orion"
+    value: ""
   workspaces:
   - name: pipeline-shared-data
     persistentvolumeclaim:

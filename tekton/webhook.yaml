@@ -10,7 +10,7 @@ spec:
     - github:
         eventTypes: ["push"]
     - cel:
-        filter: "body.repository.name == 'orion-frontend' && body.ref.split('/')[2] == 'main' || body.ref.split('/')[3] == 'add-Dockerfile'"
+        filter: "body.repository.name == 'orion-frontend' && (body.ref.split('/')[2] == 'main' || body.ref.split('/')[3] == 'add-Dockerfile')"
     bindings:
     - ref: front-app-tb
     - ref: git-event-tb
@@ -24,3 +24,22 @@ spec:
       value: "feature/add-Dockerfile"
     template:
       name: front-deploy-template
+  - name: deploy-trigger-for-back
+    interceptors:
+    - github:
+        eventTypes: ["push"]
+    - cel:
+        filter: "body.repository.name == 'orion-backend' && (body.ref.split('/')[2] == 'main' || body.ref.split('/')[2] == 'develop')"
+    bindings:
+    - ref: back-api-tb
+    - ref: git-event-tb
+    - name: manifest-url
+      value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-manifest.git"
+    - name: manifest-branch
+      value: "feature/add-back-manifest"
+    - name: source-url
+      value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-backend.git"
+    - name: source-branch
+      value: "main"
+    template:
+      name: back-deploy-template
