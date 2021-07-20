@@ -20,15 +20,18 @@ spec:
     type: string
     description: Revision to checkout of the manifest. (branch, tag, sha, ref, etc...)
     default: "master"
-#  - name: image-repo
-#    type: string
-#    description: Docker image name
-#  - name: app-name
-#    type: string
-#    description: App name
-#  - name: app-namespace
-#    type: string
-#    description: Namespace to use
+  - name: image-repo
+    type: string
+    description: Docker image name
+  - name: app-name
+    type: string
+    description: App name
+  - name: app-namespace
+    type: string
+    description: Namespace to use
+  - name: manifest-dir
+    type: string
+    description: The directory where the manifest is stored
   tasks:
   - name: source-clone
     params:
@@ -60,30 +63,36 @@ spec:
 #    runAfter:
 #    - source-clone
 #    - manifest-clone
-#  - name: build-image
-#    runAfter:
-#    - code-check
-#    - unit-test
-#    params:
-#    - name: IMAGE
-#      value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
-#    taskRef:
-#      name: buildah
-#    workspaces:
-#    - name: source
-#      workspace: pipeline-shared-data
-#  - name: deploy-for-k8s
-#    runAfter:
-#    - build-image
-#    params:
-#    - name: app-name
-#      value: "$(params.app-name)"
-#    - name: app-namespace
-#      value: "$(params.app-namespace)"
-#    - name: image-url
-#      value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
-#    taskRef:
-#      name: deploy-for-k8s-task
-#    workspaces:
-#    - name: source
-#      workspace: pipeline-shared-data
+  - name: build-image
+    runAfter:
+    - source-clone
+    - manifest-clone
+    params:
+    - name: IMAGE
+      value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
+    - name: DOCKERFILE
+      value: "./$(params.manifest-dir)/Dockerfile"
+    - name: CONTEXT
+      value: "orion"
+    taskRef:
+      name: buildah
+    workspaces:
+    - name: source
+      workspace: pipeline-shared-data
+  - name: deploy-for-k8s
+    runAfter:
+    - build-image
+    params:
+    - name: manifest-dir
+      value: "$(params.manifest-dir)"
+    - name: app-name
+      value: "$(params.app-name)"
+    - name: app-namespace
+      value: "$(params.app-namespace)"
+    - name: image-url
+      value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
+    taskRef:
+      name: deploy-for-k8s-task
+    workspaces:
+    - name: source
+      workspace: pipeline-shared-data

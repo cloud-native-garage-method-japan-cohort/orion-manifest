@@ -17,12 +17,14 @@ spec:
     value: "feature/add-front-manifest"
 #  - name: commit-message
 #    value: "$(tt.params.commit-message)"
-#  - name: image-repo
-#    value: "$(tt.params.image-url)/$(tt.params.app-name)"
-#  - name: app-name
-#    value: "$(tt.params.app-name)"
-#  - name: app-namespace
-#    value: "$(tt.params.app-namespace)"
+  - name: image-repo
+    value: "quay.io/tyonesaka/front-app"
+  - name: app-name
+    value: "front-app"
+  - name: app-namespace
+    value: "team-orion"
+  - name: manifest-dir
+    value: "front"
   workspaces:
   - name: pipeline-shared-data
     persistentvolumeclaim:

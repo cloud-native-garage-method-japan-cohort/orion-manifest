@@ -37,7 +37,7 @@ spec:
       cat results.out
   - name: verify-deploy
     image: docker.io/enzobarrett/kubectl:latest
-    workingDir: "$(workspaces.source.path)"
+    workingDir: "$(workspaces.source.path)/$(params.manifest-dir)"
     resources:
       requests:
         memory: "128Mi"
