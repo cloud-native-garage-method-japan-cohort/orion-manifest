@@ -1,9 +1,9 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
-metada:
-  front-deploy-pipeline
+metadata:
+  name: front-deploy-pipeline
 spec:
-  workspace:
+  workspaces:
   - name: pipeline-shared-data
   params:
   - name: source-url
@@ -12,22 +12,23 @@ spec:
   - name: source-branch
     type: string
     description: Revision to checkout of the source code. (branch, tag, sha, ref, etc...)
-    default: "master"
+    default: "main"
   - name: manifest-url
     type: string
     description: Repository URL of the manifest
   - name: manifest-branch
     type: string
     description: Revision to checkout of the manifest. (branch, tag, sha, ref, etc...)
-  - name: image-repo
-    type: string
-    description: Docker image name
-  - name: app-name
-    type: string
-    description: App name
-  - name: app-namespace
-    type: string
-    description: Namespace to use
+    default: "master"
+#  - name: image-repo
+#    type: string
+#    description: Docker image name
+#  - name: app-name
+#    type: string
+#    description: App name
+#  - name: app-namespace
+#    type: string
+#    description: Namespace to use
   tasks:
   - name: source-clone
     params:
@@ -48,38 +49,41 @@ spec:
       value: "$(params.manifest-branch)"
     taskRef:
       name: git-clone
-  - name: code-check
-    runAfter:
-    - source-clone
-    - manifest-clone
-  - name: unit-test
-    runAfter:
-    - source-clone
-    - manifest-clone
-  - name: build-image
-    runAfter:
-    - code-check
-    - unit-test
-    params:
-    - name: IMAGE
-      value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
-    taskRef:
-      name: buildah
     workspaces:
-    - name: source
+    - name: output
       workspace: pipeline-shared-data
-  - name: deploy-for-k8s
-    runAfter:
-    - build-image
-    params:
-    - name: app-name
-      value: "$(params.app-name)"
-    - name: app-namespace
-      value: "$(params.app-namespace)"
-    - name: image-url
-      value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
-    taskRef:
-      name: deploy-for-k8s-task
-    workspaces:
-    - name: source
-      workspace: pipeline-shared-data
+#  - name: code-check
+#    runAfter:
+#    - source-clone
+#    - manifest-clone
+#  - name: unit-test
+#    runAfter:
+#    - source-clone
+#    - manifest-clone
+#  - name: build-image
+#    runAfter:
+#    - code-check
+#    - unit-test
+#    params:
+#    - name: IMAGE
+#      value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
+#    taskRef:
+#      name: buildah
+#    workspaces:
+#    - name: source
+#      workspace: pipeline-shared-data
+#  - name: deploy-for-k8s
+#    runAfter:
+#    - build-image
+#    params:
+#    - name: app-name
+#      value: "$(params.app-name)"
+#    - name: app-namespace
+#      value: "$(params.app-namespace)"
+#    - name: image-url
+#      value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
+#    taskRef:
+#      name: deploy-for-k8s-task
+#    workspaces:
+#    - name: source
+#      workspace: pipeline-shared-data

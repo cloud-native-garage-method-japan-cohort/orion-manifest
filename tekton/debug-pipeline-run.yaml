@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: front-deploy-pr-
+spec:
+  serviceAccountName: build-bot
+  pipelineRef:
+    name: front-deploy-pipeline
+  params:
+  - name: source-url
+    value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-frontend.git"
+  - name: source-branch
+    value: "main"
+  - name: manifest-url
+    value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-manifest.git"
+  - name: manifest-branch
+    value: "feature/add-front-manifest"
+#  - name: commit-message
+#    value: "$(tt.params.commit-message)"
+#  - name: image-repo
+#    value: "$(tt.params.image-url)/$(tt.params.app-name)"
+#  - name: app-name
+#    value: "$(tt.params.app-name)"
+#  - name: app-namespace
+#    value: "$(tt.params.app-namespace)"
+  workspaces:
+  - name: pipeline-shared-data
+    persistentvolumeclaim:
+      claimName: team-orion-pvc
