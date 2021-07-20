@@ -21,12 +21,14 @@ spec:
         image: front-app # Overwrite it with the kustomize command.
         resources:
           requests:
-            memory: "128Mi"
-            cpu: "100m"
+            memory: "2Gi"
+            cpu: "1"
           limits:
-            memory: "128Mi"
-            cpu: "100m"
+            memory: "2Gi"
+            cpu: "1"
         ports:
-        - containerPort: 80
+        - containerPort: 8081
+          name: http
+          protocol: TCP
       imagePullSecrets:
       - name: registory-bot
