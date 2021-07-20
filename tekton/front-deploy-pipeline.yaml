@@ -62,7 +62,7 @@ spec:
     - name: IMAGE
       value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
     - name: DOCKERFILE
-      value: "./$(params.manifest-dir)/Dockerfile"
+      value: "./$(params.source-dir)/Dockerfile"
     - name: CONTEXT
       value: "./$(params.source-dir)"
     taskRef:
@@ -79,13 +79,13 @@ spec:
     - name: revision
       value: "$(params.manifest-branch)"
     taskRef:
-      name: manifest-clone
+      name: git-clone
     workspaces:
     - name: output
       workspace: pipeline-shared-data
   - name: deploy-for-k8s
     runAfter:
-    - build-image
+    - manifest-clone
     params:
     - name: manifest-dir
       value: "$(params.manifest-dir)"

@@ -10,7 +10,7 @@ spec:
   - name: source-url
     value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-frontend.git"
   - name: source-branch
-    value: "main"
+    value: "feature/add-Dockerfile"
   - name: manifest-url
     value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-manifest.git"
   - name: manifest-branch
