@@ -25,6 +25,8 @@ spec:
     value: "team-orion"
   - name: manifest-dir
     value: "front"
+  - name: source-dir
+    value: "orion"
   workspaces:
   - name: pipeline-shared-data
     persistentvolumeclaim:

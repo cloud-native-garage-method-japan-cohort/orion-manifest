@@ -13,13 +13,18 @@ spec:
     description: Repository URL of the manifest
   - name: manifest-branch
     description: Revision to checkout of the manifest. (branch, tag, sha, ref, etc...)
+  - name: commit-message
+    description: Message at commit
   - name: image-url
     description: Docker registory URL.
   - name: app-name
     description: App name
   - name: app-namespace
     description: Namespace to use
-  - name: image-url
+  - name: manifest-dir
+    description: The directory where the manifest is stored
+  - name: source-dir
+    description: The directory where the source code is stored
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
@@ -46,6 +51,10 @@ spec:
         value: "$(tt.params.app-name)"
       - name: app-namespace
         value: "$(tt.params.app-namespace)"
+      - name: manifest-dir
+        value: "$(tt.params.manifest-dir)"
+      - name: source-dir
+        value: "$(tt.params.source-dir)"
       workspaces:
       - name: pipeline-shared-data
         persistentvolumeclaim:

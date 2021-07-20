@@ -32,6 +32,9 @@ spec:
   - name: manifest-dir
     type: string
     description: The directory where the manifest is stored
+  - name: source-dir
+    type: string
+    description: The directory where the source code is stored
   tasks:
   - name: source-clone
     params:
@@ -39,17 +42,6 @@ spec:
       value: "$(params.source-url)"
     - name: revision
       value: "$(params.source-branch)"
-    taskRef:
-      name: git-clone
-    workspaces:
-    - name: output
-      workspace: pipeline-shared-data
-  - name: manifest-clone
-    params:
-    - name: url
-      value: "$(params.manifest-url)"
-    - name: revision
-      value: "$(params.manifest-branch)"
     taskRef:
       name: git-clone
     workspaces:
@@ -66,18 +58,30 @@ spec:
   - name: build-image
     runAfter:
     - source-clone
-    - manifest-clone
     params:
     - name: IMAGE
       value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
     - name: DOCKERFILE
       value: "./$(params.manifest-dir)/Dockerfile"
     - name: CONTEXT
-      value: "orion"
+      value: "./$(params.source-dir)"
     taskRef:
       name: buildah
     workspaces:
     - name: source
+      workspace: pipeline-shared-data
+  - name: manifest-clone
+    runAfter:
+    - build-image
+    params:
+    - name: url
+      value: "$(params.manifest-url)"
+    - name: revision
+      value: "$(params.manifest-branch)"
+    taskRef:
+      name: manifest-clone
+    workspaces:
+    - name: output
       workspace: pipeline-shared-data
   - name: deploy-for-k8s
     runAfter:
