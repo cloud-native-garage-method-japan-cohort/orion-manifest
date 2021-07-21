@@ -47,17 +47,20 @@ spec:
     workspaces:
     - name: output
       workspace: pipeline-shared-data
-#  - name: code-check
-#    runAfter:
-#    - source-clone
-#    - manifest-clone
-#  - name: unit-test
-#    runAfter:
-#    - source-clone
-#    - manifest-clone
-  - name: build-image
+  - name: code-check
     runAfter:
     - source-clone
+    params:
+    - name: args
+      value: ["./$(params.source-dir)/*.ts"]
+    taskRef:
+      name: ts-lint
+    workspaces:
+    - name: shared-workspace
+      workspace: pipeline-shared-data
+  - name: build-image
+    runAfter:
+    - code-check
     params:
     - name: IMAGE
       value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
