@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-app
+  labels:
+    app: front-app
+    version: "1.0"
+spec:
+  selector:
+    matchLabels:
+      app: front-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: front-app
+        version: "1.0"
+    spec:
+      containers:
+      - name: front-app
+        image: front-app # Overwrite it with the kustomize command.
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1"
+          limits:
+            memory: "2Gi"
+            cpu: "1"
+        ports:
+        - containerPort: 8081
+          name: http
+          protocol: TCP
+      imagePullSecrets:
+      - name: registory-bot
