@@ -18,6 +18,10 @@ spec:
     spec:
       containers:
       - name: back-api
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 30"]
         image: back-api # Overwrite it with the kustomize command.
         env:
         - name: API_KEY
