@@ -11,7 +11,7 @@ spec:
   - name: front-manifest-dir
     value: "front"
   - name: front-source-url
-    value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-front.git"
+    value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-froatend.git"
   - name: front-source-branch
     value: "feature/add-Dockerfile"
 #    value: "main"
