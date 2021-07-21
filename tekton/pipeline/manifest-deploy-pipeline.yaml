@@ -58,6 +58,8 @@ spec:
     - name: output
       workspace: pipeline-shared-data
   - name: back-source-clone
+    runAfter:
+    - front-source-clone
     params:
     - name: url
       value: "$(params.back-source-url)"
@@ -70,7 +72,6 @@ spec:
       workspace: pipeline-shared-data
   - name: manifest-clone
     runAfter:
-    - front-source-clone
     - back-source-clone
     params:
     - name: url
