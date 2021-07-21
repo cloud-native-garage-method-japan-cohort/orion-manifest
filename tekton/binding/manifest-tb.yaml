@@ -13,7 +13,8 @@ spec:
   - name: front-source-url
     value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-front.git"
   - name: front-source-branch
-    value: "master"
+    value: "feature/add-Dockerfile"
+#    value: "main"
   - name: back-app-name
     value: "back-api"
   - name: back-manifest-dir
