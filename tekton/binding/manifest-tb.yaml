@@ -1,0 +1,31 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: manifest-tb
+spec:
+  params:
+  - name: app-namespace
+    value: "team-orion"
+  - name: front-app-name
+    value: "front-app"
+  - name: front-manifest-dir
+    value: "front"
+  - name: front-source-url
+    value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-frontend.git"
+  - name: front-source-branch
+    value: "main"
+  - name: back-app-name
+    value: "back-api"
+  - name: back-manifest-dir
+    value: "back"
+  - name: back-source-url
+    value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-backend.git"
+  - name: back-source-branch
+    value: "master"
+  - name: image-repo
+    value: "quay.io/tyonesaka"
+  - name: manifest-url
+    value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-manifest.git"
+  - name: manifest-branch
+    value: "master"
+

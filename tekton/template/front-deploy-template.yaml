@@ -1,0 +1,61 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: front-deploy-template
+spec:
+  params:
+  - name: source-url
+    description: Repository URL of the source code
+  - name: source-branch
+    description: Revision to checkout of the source code. (branch, tag, sha, ref, etc...)
+    default: "master"
+  - name: manifest-url
+    description: Repository URL of the manifest
+  - name: manifest-branch
+    description: Revision to checkout of the manifest. (branch, tag, sha, ref, etc...)
+  - name: commit-message
+    description: Message at commit
+  - name: image-repo
+    description: Docker registory URL.
+  - name: app-name
+    description: App name
+  - name: app-namespace
+    description: Namespace to use
+  - name: manifest-dir
+    description: The directory where the manifest is stored
+  - name: source-dir
+    description: The directory where the source code is stored
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: front-deploy-pr-
+    spec:
+      serviceAccountName: build-bot
+      pipelineRef:
+        name: front-deploy-pipeline
+      params:
+      - name: source-url
+        value: "$(tt.params.source-url)"
+      - name: source-branch
+        value: "$(tt.params.source-branch)"
+      - name: manifest-url
+        value: "$(tt.params.manifest-url)"
+      - name: manifest-branch
+        value: "$(tt.params.manifest-branch)"
+      - name: commit-message
+        value: "$(tt.params.commit-message)"
+      - name: image-repo
+        value: "$(tt.params.image-repo)/$(tt.params.app-name)"
+      - name: app-name
+        value: "$(tt.params.app-name)"
+      - name: app-namespace
+        value: "$(tt.params.app-namespace)"
+      - name: manifest-dir
+        value: "$(tt.params.manifest-dir)"
+      - name: source-dir
+        value: "$(tt.params.source-dir)"
+      workspaces:
+      - name: pipeline-shared-data
+        persistentvolumeclaim:
+          claimName: team-orion-pvc

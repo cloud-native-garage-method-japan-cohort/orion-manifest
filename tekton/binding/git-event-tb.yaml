@@ -1,0 +1,8 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: git-event-tb
+spec:
+  params:
+    - name: git-commit-comment
+      value: $(body.commits[0].message)

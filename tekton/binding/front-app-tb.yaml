@@ -1,0 +1,16 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: front-app-tb
+spec:
+  params:
+  - name: app-name
+    value: "front-app"
+  - name: app-namespace
+    value: "team-orion"
+  - name: image-repo
+    value: "quay.io/tyonesaka"
+  - name: manifest-dir
+    value: "front"
+  - name: source-dir
+    value: "orion"

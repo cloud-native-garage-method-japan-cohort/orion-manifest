@@ -1,0 +1,119 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: manifest-deploy-pipeline
+spec:
+  workspaces:
+  - name: pipeline-shared-data
+  params:
+  - name: front-app-name
+    type: string
+    description: App name
+  - name: front-source-url
+    type: string
+    description: Repository URL of the source code
+  - name: front-source-branch
+    type: string
+    description: Revision to checkout of the source code. (branch, tag, sha, ref, etc...)
+  - name: front-manifest-dir
+    type: string
+    description: The directory where the manifest is stored
+  - name: front-image-repo
+    type: string
+    description: Docker image name
+  - name: back-app-name
+    type: string
+    description: App name
+  - name: back-source-url
+    type: string
+    description: Repository URL of the source code
+  - name: back-source-branch
+    type: string
+    description: Revision to checkout of the source code. (branch, tag, sha, ref, etc...)
+  - name: back-manifest-dir
+    type: string
+    description: The directory where the manifest is stored
+  - name: back-image-repo
+    type: string
+    description: Docker image name
+  - name: manifest-url
+    type: string
+    description: Repository URL of the manifest
+  - name: manifest-branch
+    type: string
+    description: Revision to checkout of the manifest. (branch, tag, sha, ref, etc...)
+  - name: app-namespace
+    type: string
+    description: Namespace to use
+  tasks:
+  - name: front-source-clone
+    params:
+    - name: url
+      value: "$(params.front-source-url)"
+    - name: revision
+      value: "$(params.front-source-branch)"
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: pipeline-shared-data
+  - name: back-source-clone
+    runAfter:
+    - front-source-clone
+    params:
+    - name: url
+      value: "$(params.back-source-url)"
+    - name: revision
+      value: "$(params.back-source-branch)"
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: pipeline-shared-data
+  - name: manifest-clone
+    runAfter:
+    - back-source-clone
+    params:
+    - name: url
+      value: "$(params.manifest-url)"
+    - name: revision
+      value: "$(params.manifest-branch)"
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: pipeline-shared-data
+  - name: front-deploy
+    runAfter:
+    - manifest-clone
+    params:
+    - name: manifest-dir
+      value: "$(params.front-manifest-dir)"
+    - name: app-name
+      value: "$(params.front-app-name)"
+    - name: app-namespace
+      value: "$(params.app-namespace)"
+    - name: image-url
+      value: "$(params.front-image-repo):$(tasks.front-source-clone.results.commit)"
+    taskRef:
+      name: deploy-for-k8s-task
+    workspaces:
+    - name: source
+      workspace: pipeline-shared-data
+  - name: back-deploy
+    runAfter:
+    - manifest-clone
+    params:
+    - name: manifest-dir
+      value: "$(params.back-manifest-dir)"
+    - name: app-name
+      value: "$(params.back-app-name)"
+    - name: app-namespace
+      value: "$(params.app-namespace)"
+    - name: image-url
+      value: "$(params.back-image-repo):$(tasks.back-source-clone.results.commit)"
+    taskRef:
+      name: deploy-for-k8s-task
+    workspaces:
+    - name: source
+      workspace: pipeline-shared-data
