@@ -10,7 +10,7 @@ spec:
     - github:
         eventTypes: ["push"]
     - cel:
-        filter: "body.repository.name == 'orion-frontend' && (body.ref.split('/')[2] == 'main' || body.ref.split('/')[3] == 'add-Dockerfile')"
+        filter: "body.repository.name == 'orion-frontend' && body.ref.split('/')[2] == 'main'"
     bindings:
     - ref: front-app-tb
     - ref: git-event-tb
@@ -21,7 +21,7 @@ spec:
     - name: source-url
       value: "git@github.com:cloud-native-garage-method-japan-cohort/orion-frontend.git"
     - name: source-branch
-      value: "feature/add-Dockerfile"
+      value: "main"
     template:
       name: front-deploy-template
   - name: deploy-trigger-for-back
