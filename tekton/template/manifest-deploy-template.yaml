@@ -51,7 +51,7 @@ spec:
       - name: front-image-repo
         value: "$(tt.params.image-repo)/$(tt.params.front-app-name)"
       - name: back-app-name
-        value: "$(tt.params.front-app-name)"
+        value: "$(tt.params.back-app-name)"
       - name: back-source-url
         value: "$(tt.params.back-source-url)"
       - name: back-source-branch
