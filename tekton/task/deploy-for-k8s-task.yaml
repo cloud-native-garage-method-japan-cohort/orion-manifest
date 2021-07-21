@@ -33,7 +33,6 @@ spec:
       #!/bin/sh
       kustomize edit set image "$(params.app-name)=$(params.image-url)"
       kustomize build -o resource.yaml
-      cat resource.yaml
       kubectl apply -f resource.yaml  --validate=false > results.out
       cat results.out
   - name: verify-deploy
