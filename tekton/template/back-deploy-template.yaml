@@ -15,7 +15,7 @@ spec:
     description: Revision to checkout of the manifest. (branch, tag, sha, ref, etc...)
   - name: commit-message
     description: Message at commit
-  - name: image-url
+  - name: image-repo
     description: Docker registory URL.
   - name: app-name
     description: App name
@@ -29,11 +29,11 @@ spec:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      generateName: front-deploy-pr-
+      generateName: back-deploy-pr-
     spec:
       serviceAccountName: build-bot
       pipelineRef:
-        name: front-deploy-pipeline
+        name: back-deploy-pipeline
       params:
       - name: source-url
         value: "$(tt.params.source-url)"
@@ -46,7 +46,7 @@ spec:
       - name: commit-message
         value: "$(tt.params.commit-message)"
       - name: image-repo
-        value: "$(tt.params.image-url)/$(tt.params.app-name)"
+        value: "$(tt.params.image-repo)/$(tt.params.app-name)"
       - name: app-name
         value: "$(tt.params.app-name)"
       - name: app-namespace

@@ -1,0 +1,74 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: manifest-deploy-template
+spec:
+  params:
+  - name: front-app-name
+    description: App name
+  - name: front-manifest-dir
+    description: The directory where the manifest is stored
+  - name: front-source-url
+    description: Repository URL of the source code
+  - name: front-source-branch
+    description: Revision to checkout of the source code. (branch, tag, sha, ref, etc...)
+  - name: back-app-name
+    description: App name
+  - name: back-manifest-dir
+    description: The directory where the manifest is stored
+  - name: back-source-url
+    description: Repository URL of the source code
+  - name: back-source-branch
+    description: Revision to checkout of the source code. (branch, tag, sha, ref, etc...)
+  - name: manifest-url
+    description: Repository URL of the manifest
+  - name: manifest-branch
+    description: Revision to checkout of the manifest. (branch, tag, sha, ref, etc...)
+  - name: commit-message
+    description: Message at commit
+  - name: image-repo
+    description: Docker registory URL.
+  - name: app-namespace
+    description: Namespace to use
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: manifest-deploy-pr-
+    spec:
+      serviceAccountName: build-bot
+      pipelineRef:
+        name: manifest-deploy-pipeline
+      params:
+      - name: front-app-name
+        value: "$(tt.params.front-app-name)"
+      - name: front-source-url
+        value: "$(tt.params.front-source-url)"
+      - name: front-source-branch
+        value: "$(tt.params.front-source-branch)"
+      - name: front-manifest-dir
+        value: "$(tt.params.front-manifest-dir)"
+      - name: front-image-repo
+        value: "$(tt.params.image-repo)/$(tt.params.front-app-name)"
+      - name: back-app-name
+        value: "$(tt.params.front-app-name)"
+      - name: back-source-url
+        value: "$(tt.params.back-source-url)"
+      - name: back-source-branch
+        value: "$(tt.params.back-source-branch)"
+      - name: back-manifest-dir
+        value: "$(tt.params.back-manifest-dir)"
+      - name: back-image-repo
+        value: "$(tt.params.image-repo)/$(tt.params.back-app-name)"
+      - name: manifest-url
+        value: "$(tt.params.manifest-url)"
+      - name: manifest-branch
+        value: "$(tt.params.manifest-branch)"
+      - name: commit-message
+        value: "$(tt.params.commit-message)"
+      - name: app-namespace
+        value: "$(tt.params.app-namespace)"
+      workspaces:
+      - name: pipeline-shared-data
+        persistentvolumeclaim:
+          claimName: team-orion-pvc

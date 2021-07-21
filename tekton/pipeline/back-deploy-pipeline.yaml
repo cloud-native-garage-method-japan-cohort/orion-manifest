@@ -47,17 +47,33 @@ spec:
     workspaces:
     - name: output
       workspace: pipeline-shared-data
-#  - name: code-check
-#    runAfter:
-#    - source-clone
-#    - manifest-clone
-#  - name: unit-test
-#    runAfter:
-#    - source-clone
-#    - manifest-clone
-  - name: build-image
+  - name: install-dependencies
     runAfter:
     - source-clone
+    params:
+    - name: ARGS
+      value:
+      - clean-install
+    taskRef:
+      name: npm
+    workspaces:
+    - name: source
+      workspace: pipeline-shared-data
+  - name: unit-test
+    runAfter:
+    - install-dependencies
+    params:
+    - name: ARGS
+      value:
+      - test
+    taskRef:
+      name: npm
+    workspaces:
+    - name: source
+      workspace: pipeline-shared-data
+  - name: build-image
+    runAfter:
+    - unit-test
     params:
     - name: IMAGE
       value: "$(params.image-repo):$(tasks.source-clone.results.commit)"
