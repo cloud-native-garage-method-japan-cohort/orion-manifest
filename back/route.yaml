@@ -1,0 +1,12 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: back-api-route
+spec:
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: back-api
+    weight: 100
+  wildcardPolicy: None
