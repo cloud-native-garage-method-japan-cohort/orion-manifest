@@ -12,7 +12,7 @@ git clone git@github.com:cloud-native-garage-method-japan-cohort/orion-manifest.
 
 # Environment
 OpenShift<br>
-Cluster-ID: f426edb6-0ade-4117-88f8-ef2a6331d755
+Cluster-ID: f426edb6-0ade-4117-88f8-ef2a6331d755<br>
 namespace: team-orion
 
 # Notice
